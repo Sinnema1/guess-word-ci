@@ -1,0 +1,28 @@
+version: 2.1
+
+jobs:
+  hello-world-job:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - run: echo "Hello, World!"
+      - run: echo "Hello, CircleCI!"
+
+  deploy-to-render:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - run:
+          name: Install Render CLI
+          command: curl -fsSL https://render.com/static/cli/render -o /usr/local/bin/render && chmod +x /usr/local/bin/render
+      - run:
+          name: Deploy to Render
+          command: render deploy --service srv-cuc3hjdumphs73dsvek0 --api-key $RENDER_API_KEY
+
+workflows:
+  hello-world-workflow:
+    jobs:
+      - hello-world-job
+      - deploy-to-render:
+          requires:
+            - hello-world-job
